@@ -1,4 +1,7 @@
+import React from 'react';
 import { Compass } from 'lucide-react';
+// 👇 1. Import your new button
+import LoginButton from './LoginButton';
 
 interface NavbarProps {
   currentPage: string;
@@ -51,12 +54,10 @@ export default function Navbar({ currentPage, onNavigate }: NavbarProps) {
             >
               AI Compass
             </button>
-            <button
-              onClick={() => onNavigate('login')}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium hover:from-purple-500 hover:to-blue-500 transition-all"
-            >
-              Login
-            </button>
+            
+            {/* 👇 2. Replaced the old Login button with your Smart Button */}
+            <LoginButton />
+            
           </div>
         </div>
       </div>

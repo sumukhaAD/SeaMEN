@@ -47,12 +47,26 @@ export default function AICompass() {
     setIsTyping(true);
 
 try {
-      // 🚨 PASTE YOUR NEW API KEY HERE (Keep the quotes!)
-      const apiKey = "AIzaSyCcf0k51yXqLlzxMHsDRRC48BuAniHIEcI"; 
-      
+      // ✅ Read key from .env
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!apiKey) throw new Error("Missing API Key in .env file");
+
+      // 📚 DATABASE
+      const clubKnowledgeBase = `
+        [
+          { "name": "SKYWARD Aeronautics Society", "desc": "Drones, UAVs, and RC aircraft.", "formed": "2018", "members": "156", "head": "Aarav Sharma", "socials": "@skyward_nmit" },
+          { "name": "BYTECRAFT Collective", "desc": "Coding, AI, hackathons, and app dev.", "formed": "2019", "members": "203", "head": "Priya Patel", "socials": "@bytecraft" },
+          { "name": "NEXUS Robotics Society", "desc": "Automation, sensors, and bots.", "formed": "2020", "members": "128", "head": "Rohan Gupta", "socials": "@nexus_robotics" },
+          { "name": "RHYTHM & ROOTS", "desc": "Dance, music, and stage arts.", "formed": "2015", "members": "89", "head": "Sneha Reddy", "socials": "@rhythm_roots" },
+          { "name": "LENS & LORE Society", "desc": "Photography and filmmaking.", "formed": "2021", "members": "74", "head": "Vikram Singh", "socials": "@lensandlore" },
+          { "name": "INVICTUS Sports Union", "desc": "Competitive sports and tournaments.", "formed": "2016", "members": "112", "head": "Arjun Nair", "socials": "@invictus_sports" }
+        ]
+      `;
+
+      // 🧠 MEMORY
+      const chatContext = messages.slice(-3).map(m => `${m.sender}: ${m.text}`).join('\n');
+
       const response = await fetch(
-        // ✅ Using "gemini-flash-latest" 
-        // (This is on your valid list and uses the Free Tier quota)
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
         {
           method: 'POST',
@@ -60,7 +74,52 @@ try {
           body: JSON.stringify({
             contents: [{ 
               parts: [{ 
-                text: `You are a helpful student counselor. Keep it short. User: "${currentInput}"` 
+                text: `
+                  You are a friendly NMIT Club Counselor.
+                  Database: ${clubKnowledgeBase}
+
+                  📜 RECENT CHAT:
+                  ${chatContext}
+
+                  👇 CURRENT INPUT:
+                  "${currentInput}"
+
+                  🚨 STRICT FORMATTING RULES:
+                  1. **ALWAYS** use double newlines (\n\n) between every section.
+                  2. **NEVER** dump a wall of text. Use lists.
+                  3. **NEVER** provide comparisons unless explicitly asked.
+
+                  🧠 LOGIC FLOW:
+                  
+                  Scenario A: User mentions an interest (e.g., "I like coding")
+                  - Action: Recommend the *single best club*. Give a 1-sentence reason.
+                  - Ending: "Would you like to see the club details?"
+
+                  Scenario B: User asks for details (e.g., "Tell me more", "Yes")
+                  - Action: Show the full ID Card.
+                  - Format:
+                    🚀 **[Club Name]**
+                    
+                    📝 [Description]
+                    
+                    📅 **Formed:** [Year]
+                    👥 **Members:** [Count]
+                    👤 **Head:** [Name]
+                    🔗 **Socials:** [Link]
+
+                  Scenario C: User asks to compare (e.g., "Compare Skyward and Bytecraft")
+                  - Action: specific comparison.
+                  - Format:
+                    ⚔️ **[Club A] vs [Club B]**
+                    
+                    👉 **[Club A]**
+                    * Focus: [Topic]
+                    
+                    👉 **[Club B]**
+                    * Focus: [Topic]
+                    
+                    🏆 **Verdict:** Choose [A] if...
+                ` 
               }] 
             }]
           })
@@ -70,12 +129,11 @@ try {
       const googleData = await response.json();
 
       if (googleData.error) {
-        // If this hits, it will print the EXACT model name causing the issue
-        throw new Error(`${googleData.error.message}`);
+        throw new Error(googleData.error.message);
       }
 
       const aiText = googleData.candidates?.[0]?.content?.parts?.[0]?.text 
-        || "No response text found.";
+        || "I'm sorry, I couldn't think of a response.";
 
       const aiMessage: Message = {
         id: messages.length + 2,
@@ -158,7 +216,7 @@ try {
                         : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
                     }`}
                   >
-                    <p className="text-sm leading-relaxed">{message.text}</p>
+                    <p className="text-sm leading-relaxed" style={{ whiteSpace: 'pre-wrap' }}>{message.text}</p>
                   </div>
                   <span className="text-xs text-gray-500 mt-1 px-1">
                     {message.timestamp.toLocaleTimeString([], {

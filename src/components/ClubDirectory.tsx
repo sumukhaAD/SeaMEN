@@ -1,109 +1,120 @@
-import { Search } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Search, Filter } from 'lucide-react';
 import ClubCard from './ClubCard';
 
-const sampleClubs = [
+const clubs = [
   {
-    id: 1,
-    name: 'SKYWARD Aeronautics Society',
-    description: 'A hands-on aeronautical club where students design, build, and fly UAVs, gliders, and experimental aircraft models. From wind tunnel theory to real flight tests, this is where aviation dreams take off.',
-    image: '/aero.png',
+    id: "skw001",
+    name: "SKYWARD Aeronautics",
+    desc: "Drones, UAVs, and RC aircraft design and testing.",
     members: 156,
-    category: 'Tech',
-    vibeTags: ['#AviationNerds', '#BuildFlyRepeat', '#FuturePilots'],
+    category: "Technical",
+    head: { name: "Aarav Sharma" },
+    image: "/aero.png"
   },
   {
-    id: 2,
-    name: 'BYTECRAFT Collective',
-    description: 'A creative tech club focused on coding, AI, app development, and hackathons. From midnight debugging sessions to shipping real products, it\'s where ideas turn into code.',
-    image: '/coding.png',
+    id: "byt002",
+    name: "BYTECRAFT Collective",
+    desc: "Coding, AI, hackathons, and app development.",
     members: 203,
-    category: 'Tech',
-    vibeTags: ['#Geeky', '#Innovative', '#HackathonEnergy'],
+    category: "Technical",
+    head: { name: "Priya Patel" },
+    image: "/coding.png"
   },
   {
-    id: 3,
-    name: 'NEXUS Robotics Society',
-    description: 'This club dives deep into robotics, automation, and future tech through projects and competitions. Think sensors, motors, AI, and robots that actually move.',
-    image: '/robotics.png',
+    id: "nxs003",
+    name: "NEXUS Robotics",
+    desc: "Automation, sensors, and bot building.",
     members: 128,
-    category: 'Tech',
-    vibeTags: ['#FutureTech', '#ProblemSolvers', '#RoboticsNerds'],
+    category: "Technical",
+    head: { name: "Rohan Gupta" },
+    image: "/robotics.png"
   },
   {
-    id: 4,
-    name: 'RHYTHM & ROOTS',
-    description: 'A vibrant space celebrating music, dance, and cultural expression from all backgrounds. From stage performances to flash mobs, this club owns the spotlight.',
-    image: '/dance.png',
+    id: "rnr004",
+    name: "RHYTHM & ROOTS",
+    desc: "Dance, music, and stage arts performance.",
     members: 89,
-    category: 'Cultural',
-    vibeTags: ['#ExpressYourself', '#CreativeSouls', '#StageReady'],
+    category: "Cultural",
+    head: { name: "Sneha Reddy" },
+    image: "/dance.png"
   },
   {
-    id: 5,
-    name: 'LENS & LORE Society',
-    description: 'A storytelling club for photographers, filmmakers, writers, and visual artists. Every event is about capturing emotions and turning moments into art.',
-    image: '/lit.png',
+    id: "Ins005",
+    name: "LENS & LORE",
+    desc: "Photography, filmmaking, and visual storytelling.",
     members: 74,
-    category: 'Cultural',
-    vibeTags: ['#Aesthetic', '#Storytellers', '#CreativeVibes'],
+    category: "Creative",
+    head: { name: "Vikram Singh" },
+    image: "/lit.png" 
   },
   {
-    id: 6,
-    name: 'INVICTUS Sports Union',
-    description: 'A competitive and energetic sports club that brings athletes from all disciplines together. From intense practice sessions to inter-college tournaments, it\'s all about team spirit.',
-    image: '/sports.png',
+    id: "inv006",
+    name: "INVICTUS Sports",
+    desc: "Competitive sports, fitness, and tournaments.",
     members: 112,
-    category: 'Sports',
-    vibeTags: ['#NoLimits', '#TeamSpirit', '#GameOn'],
-  },
+    category: "Sports",
+    head: { name: "Arjun Nair" },
+    image: "/sports.png"
+  }
 ];
 
-export default function ClubDirectory() {
+const ClubDirectory = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const filteredClubs = sampleClubs.filter(
-    (club) =>
-      club.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      club.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      club.vibeTags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredClubs = clubs.filter(club => {
+    const matchesSearch = club.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         club.desc.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || club.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
-    <div id="clubs-section" className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-            Explore <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Our Clubs</span>
-          </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
-            Find the perfect community that matches your interests and passions
-          </p>
-
-          <div className="max-w-xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+    // 👇 FIX HERE: Changed 'py-12' to 'pt-24 pb-12' to push content below Navbar
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12" id="clubs">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 space-y-4 md:space-y-0">
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-2">Explore Clubs</h2>
+          <p className="text-gray-400">Find your community at NMIT</p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <input
               type="text"
-              placeholder="Search clubs by name, description, or vibe tags..."
+              placeholder="Search clubs..."
+              className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-xl backdrop-blur-md bg-gray-800/40 border border-purple-500/20 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
             />
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredClubs.map((club) => (
-            <ClubCard key={club.id} {...club} />
-          ))}
-        </div>
-
-        {filteredClubs.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">No clubs found matching your search.</p>
+          
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <select 
+              className="pl-10 pr-8 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 appearance-none w-full"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="All">All Categories</option>
+              <option value="Technical">Technical</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Sports">Sports</option>
+              <option value="Creative">Creative</option>
+            </select>
           </div>
-        )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredClubs.map((club) => (
+          <ClubCard key={club.id} club={club} />
+        ))}
       </div>
     </div>
   );
-}
+};
+
+export default ClubDirectory;

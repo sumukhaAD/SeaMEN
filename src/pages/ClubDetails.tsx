@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react'; // 👈 Added useState
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, Users, Trophy, Mail } from 'lucide-react';
 
@@ -69,6 +69,7 @@ const clubsData = [
 const ClubDetails = () => {
   const { id } = useParams();
   const club = clubsData.find(c => c.id === id);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 👈 Added State
 
   if (!club) {
     return (
@@ -97,6 +98,16 @@ const ClubDetails = () => {
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">{club.name}</h1>
             <p className="text-lg md:text-xl text-gray-300">{club.desc}</p>
           </div>
+        </div>
+
+        {/* 👇 NEW: Apply Button Section */}
+        <div className="flex justify-end mb-8">
+           <button 
+             onClick={() => setIsModalOpen(true)}
+             className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/25 flex items-center justify-center transform hover:scale-105"
+           >
+             Apply to Join {club.name} 🚀
+           </button>
         </div>
 
         {/* Stats Grid */}
@@ -133,6 +144,35 @@ const ClubDetails = () => {
             ))}
           </ul>
         </div>
+
+        {/* 👇 NEW: Application Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
+            <div className="relative bg-gray-800 p-8 rounded-2xl border border-gray-700 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200">
+              <h3 className="text-2xl font-bold text-white mb-2">Join {club.name}</h3>
+              <p className="text-gray-400 mb-6 text-sm">Enter your student details to request membership.</p>
+              
+              <form onSubmit={(e) => { e.preventDefault(); alert("Application Sent Successfully! 🚀"); setIsModalOpen(false); }}>
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="block text-gray-400 text-xs mb-1 uppercase tracking-wider">Student Name</label>
+                    <input type="text" required className="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:border-blue-500 outline-none transition" placeholder="Your name" />
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-xs mb-1 uppercase tracking-wider">USN / Roll No</label>
+                    <input type="text" required className="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:border-blue-500 outline-none transition" placeholder="e.g. 1NT26EC000" />
+                  </div>
+                </div>
+                
+                <div className="flex space-x-3">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition font-medium">Cancel</button>
+                  <button type="submit" className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-bold shadow-lg shadow-blue-900/20">Submit Application</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
